@@ -4,107 +4,70 @@ import { radius } from "@/lib/spacing.stylex";
 import { fontWeight } from "@/lib/typography.stylex";
 import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-function calculateNavIndicatorWidth(
-  activeTab: "about" | "work",
-  aboutMeRef: HTMLButtonElement | null,
-  workRef: HTMLButtonElement | null,
-) {
-  switch (activeTab) {
-    case "about":
-      return aboutMeRef?.offsetWidth ?? 0;
-    case "work":
-      return workRef?.offsetWidth ?? 0;
-    default:
-      return 0;
-  }
-}
+const NAV_TABS = [
+  { key: "about", label: "About me" },
+  { key: "work", label: "Work" },
+] as const;
 
-function calculateNavIndicatorTranslateX(
-  activeTab: "about" | "work",
-  aboutMeRef: HTMLButtonElement | null,
-) {
-  switch (activeTab) {
-    case "about":
-      return 0;
-    case "work":
-      return aboutMeRef?.offsetWidth ?? 0;
-    default:
-      return 0;
-  }
+type NavTab = (typeof NAV_TABS)[number]["key"];
+
+function getIndicatorGeometry(
+  activeIndex: number,
+  refs: Array<HTMLButtonElement | null>,
+): { width: number; translateX: number } {
+  return {
+    translateX: refs
+      .slice(0, activeIndex)
+      .reduce((sum, ref) => sum + (ref?.offsetWidth ?? 0), 0),
+    width: refs[activeIndex]?.offsetWidth ?? 0,
+  };
 }
 
 const Header = () => {
-  const [navIndicatorTranslateX, setNavIndicatorTranslateX] = useState(0);
-  const [navIndicatorWidth, setNavIndicatorWidth] = useState(0);
-  const [activeTab, setActiveTab] = useState<"about" | "work">("about");
-  const aboutMeRef = useRef<HTMLButtonElement>(null);
-  const workRef = useRef<HTMLButtonElement>(null);
+  const [activeTab, setActiveTab] = useState<NavTab>("about");
+  const [geometry, setGeometry] = useState({ width: 0, translateX: 0 });
+  const [mounted, setMounted] = useState(false);
+  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  const _handleNavChange = (tab: "about" | "work") => {
-    setActiveTab(tab);
-    const width = calculateNavIndicatorWidth(
-      tab,
-      aboutMeRef.current,
-      workRef.current,
-    );
-    setNavIndicatorWidth(width);
-    const translateX = calculateNavIndicatorTranslateX(tab, aboutMeRef.current);
-    setNavIndicatorTranslateX(translateX);
-  };
-
-  const navIndicatorWidthChange = useEffectEvent(
-    (activeTab: "about" | "work") => {
-      const width = calculateNavIndicatorWidth(
-        activeTab,
-        aboutMeRef.current,
-        workRef.current,
-      );
-      setNavIndicatorWidth(width);
-      const translateX = calculateNavIndicatorTranslateX(
-        activeTab,
-        aboutMeRef.current,
-      );
-      setNavIndicatorTranslateX(translateX);
-    },
-  );
+  useLayoutEffect(() => {
+    const activeIndex = NAV_TABS.findIndex((t) => t.key === activeTab);
+    setGeometry(getIndicatorGeometry(activeIndex, buttonRefs.current));
+  }, [activeTab]);
 
   useEffect(() => {
-    navIndicatorWidthChange(activeTab);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   return (
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.navContainer)}>
-        <button
-          ref={aboutMeRef}
-          {...stylex.props(
-            styles.navButton,
-            activeTab === "about" && styles.navButtonActive,
-          )}
-          onClick={() => _handleNavChange("about")}
-        >
-          <span>About me</span>
-        </button>
-        <button
-          ref={workRef}
-          {...stylex.props(
-            styles.navButton,
-            activeTab === "work" && styles.navButtonActive,
-          )}
-          onClick={() => _handleNavChange("work")}
-        >
-          <span>Work</span>
-        </button>
+        {NAV_TABS.map(({ key, label }, i) => (
+          <button
+            key={key}
+            ref={(el) => {
+              buttonRefs.current[i] = el;
+            }}
+            {...stylex.props(
+              styles.navButton,
+              activeTab === key && styles.navButtonActive,
+            )}
+            onClick={() => setActiveTab(key)}
+          >
+            <span>{label}</span>
+          </button>
+        ))}
         <div
           {...stylex.props(
             styles.navActiveIndicator(
-              navIndicatorWidth,
-              navIndicatorTranslateX,
+              geometry.width,
+              geometry.translateX,
+              mounted,
             ),
           )}
-        ></div>
+        />
       </div>
     </header>
   );
@@ -134,7 +97,7 @@ const styles = stylex.create({
     minHeight: "40px",
     paddingTop: "8px",
     paddingBottom: "8px",
-    paddingLeft: " 12px",
+    paddingLeft: "12px",
     paddingRight: "12px",
     borderRadius: radius.lg,
     backgroundColor: "transparent",
@@ -144,17 +107,23 @@ const styles = stylex.create({
     color: colors.white,
     transitionDuration: "300ms",
   },
-  navActiveIndicator: (width: number, translateX: number) => ({
+  navActiveIndicator: (
+    width: number,
+    translateX: number,
+    mounted: boolean,
+  ) => ({
     zIndex: 0,
     position: "absolute",
     top: "50%",
-    transform: `translate(${translateX}px,-50%)`,
     left: 0,
     height: "calc(100% - 8px)",
     marginLeft: "4px",
     backgroundColor: colors.surfaceDarker,
     borderRadius: radius.lg,
-    transitionDuration: "300ms",
     width: width,
+    transform: `translate(${translateX}px, -50%)`,
+    opacity: mounted ? 1 : 0,
+    transitionProperty: mounted ? "width, transform, opacity" : "opacity",
+    transitionDuration: "300ms",
   }),
 });
