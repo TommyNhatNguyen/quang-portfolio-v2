@@ -130,6 +130,12 @@
     border-collapse: collapse;
     border-spacing: 0;
   }
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
 
   * {
     box-sizing: border-box;

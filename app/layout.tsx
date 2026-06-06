@@ -28,11 +28,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const htmlProps = stylex.props(styles.html);
   return (
     <html
       lang="en"
-      className={`${interTight.variable} ${inter.variable}`}
-      {...stylex.props(styles.html)}
+      {...htmlProps}
+      className={`${interTight.variable} ${inter.variable}${htmlProps.className ? ` ${htmlProps.className}` : ""}`}
     >
       <body {...stylex.props(styles.body)}>{children}</body>
     </html>
