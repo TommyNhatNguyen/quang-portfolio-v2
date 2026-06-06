@@ -5,24 +5,24 @@ export const fontFamily = stylex.defineConsts({
   secondary: "var(--font-inter), 'Inter', sans-serif",
 });
 
-
 export const fontSize = stylex.defineConsts({
-  xs: "10px",
-  sm: "12px",
-  md: "14px",
-  base: "16px",
-  lg: "18px",
-  xl: "20px",
-  "2xl": "28px",
-  "3xl": "36px",
-  "4xl": "48px",
-  "5xl": "80px",
+  xs: "1.0rem",
+  sm: "1.2rem",
+  md: "1.4rem",
+  base: "1.6rem",
+  lg: "1.8rem",
+  xl: "2.0rem",
+  "2xl": "2.8rem",
+  "3xl": "3.6rem",
+  "4xl": "4.8rem",
+  "5xl": "8.0rem",
 });
 
 export const fontWeight = stylex.defineConsts({
   regular: "400",
   medium: "500",
   semiBold: "600",
+  bold: "700",
 });
 
 // Paired to fontSize scale — px values as authored in Figma

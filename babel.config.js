@@ -1,5 +1,4 @@
 const path = require('path');
-
 const dev = process.env.NODE_ENV !== 'production';
 
 module.exports = {
@@ -12,12 +11,9 @@ module.exports = {
         runtimeInjection: false,
         enableInlinedConditionalMerge: true,
         treeshakeCompensation: true,
-        aliases: {
-          '@/*': [path.join(__dirname, '*')],
-        },
-        unstable_moduleResolution: {
-          type: 'commonJS',
-        },
+        aliases: { '@/*': [path.join(__dirname, '*')] },
+        unstable_moduleResolution: { type: 'commonJS' },
+        // ... other StyleX configuration
       },
     ],
   ],
