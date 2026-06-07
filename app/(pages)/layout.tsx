@@ -1,7 +1,9 @@
 import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import Header from "../components/header";
-type Props = {};
+type Props = {
+  children: React.ReactNode;
+};
 
 const MainLayout = (props: Props) => {
   return (
@@ -9,7 +11,7 @@ const MainLayout = (props: Props) => {
       {/* Header */}
       <Header />
       {/* Body */}
-      <section></section>
+      {props.children}
     </main>
   );
 };

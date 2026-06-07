@@ -2,28 +2,15 @@
 import { colors } from "@/lib/colors.stylex";
 import { radius } from "@/lib/spacing.stylex";
 import { fontWeight } from "@/lib/typography.stylex";
-import { variables } from "@/lib/variables.stylex";
+import { breakpoints, variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+type NavTab = (typeof NAV_TABS)[number]["key"];
 const NAV_TABS = [
   { key: "about", label: "About me" },
   { key: "work", label: "Work" },
 ] as const;
-
-type NavTab = (typeof NAV_TABS)[number]["key"];
-
-function getIndicatorGeometry(
-  activeIndex: number,
-  refs: Array<HTMLButtonElement | null>,
-): { width: number; translateX: number } {
-  return {
-    translateX: refs
-      .slice(0, activeIndex)
-      .reduce((sum, ref) => sum + (ref?.offsetWidth ?? 0), 0),
-    width: refs[activeIndex]?.offsetWidth ?? 0,
-  };
-}
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState<NavTab>("about");
@@ -75,6 +62,18 @@ const Header = () => {
 
 export default Header;
 
+function getIndicatorGeometry(
+  activeIndex: number,
+  refs: Array<HTMLButtonElement | null>,
+): { width: number; translateX: number } {
+  return {
+    translateX: refs
+      .slice(0, activeIndex)
+      .reduce((sum, ref) => sum + (ref?.offsetWidth ?? 0), 0),
+    width: refs[activeIndex]?.offsetWidth ?? 0,
+  };
+}
+
 const styles = stylex.create({
   header: {
     width: "100%",
@@ -86,6 +85,10 @@ const styles = stylex.create({
     alignItems: "center",
     width: "fit-content",
     marginLeft: "auto",
+    marginRight: {
+      default: "none",
+      [breakpoints.mobile]: "auto",
+    },
     padding: "4px",
     backgroundColor: colors.bgSecondary,
     borderRadius: radius.lg,

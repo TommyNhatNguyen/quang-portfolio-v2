@@ -44,8 +44,6 @@ const styles = stylex.create({
   html: {
     fontSize: "62.5%",
     fontFamily: fontFamily.primary,
-    lineHeight: "normal",
-    letterSpacing: "normal",
     height: "100%",
     width: "100%",
     margin: "auto",
@@ -54,9 +52,11 @@ const styles = stylex.create({
     height: "100%",
     width: "100%",
     margin: "auto",
+    lineHeight: "normal",
     fontSize: fontSize.base,
     fontWeight: fontWeight.regular,
     color: colors.black,
     backgroundColor: colors.white,
+    overflowX: "hidden",
   },
 });

@@ -32,6 +32,7 @@ export const colors = stylex.defineVars({
   overlayMedium: 'rgba(0, 0, 0, 0.5)',
   overlayLight: 'rgba(0, 0, 0, 0.3)',
   overlaySubtle: 'rgba(0, 0, 0, 0.04)',
+  overlayIconLight: 'rgba(250, 250, 250, 1)',
 
   // ── Borders ────────────────────────────────────────────────────────────
   borderLight: 'rgba(0, 0, 0, 0.12)',
