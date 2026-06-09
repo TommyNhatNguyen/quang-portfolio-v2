@@ -2,9 +2,11 @@
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
 import { fontSize, fontWeight } from "@/lib/typography.stylex";
+import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-type Props = {};
 
 const filters = [
   {
@@ -24,7 +26,7 @@ const filters = [
   },
 ];
 
-const Page = (props: Props) => {
+const Page = () => {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   return (
     <section {...stylex.props(styles.section)}>
@@ -58,9 +60,41 @@ const Page = (props: Props) => {
       </div>
       {/* List */}
       <ul {...stylex.props(styles.list)}>
-        <li {...stylex.props(styles.listItem)}>
-          <article {...stylex.props(styles.article)}></article>
-        </li>
+        {Array.from({ length: 10 }).map((_, index) => {
+          return (
+            <li key={index} {...stylex.props(styles.listItem)}>
+              <article {...stylex.props(styles.article)}>
+                {/* Thumbnail */}
+                <div
+                  {...stylex.props(
+                    styles.articleThumbnailContainer,
+                    stylex.defaultMarker(),
+                  )}
+                >
+                  <Link href={"#"} {...stylex.props(styles.articleThumbnail)}>
+                    <Image
+                      {...stylex.props(styles.articleThumbnailImage)}
+                      src={"/avatar.jpg"}
+                      alt="work"
+                      width={680}
+                      height={540}
+                    />
+                  </Link>
+                  <div {...stylex.props(styles.articleThumbnailShadow)}></div>
+                </div>
+                {/* Title */}
+                <div {...stylex.props(styles.articleTitleContainer)}>
+                  <Link href={"#"} {...stylex.props(styles.articleTitle)}>
+                    SkillPod
+                  </Link>
+                  <p {...stylex.props(styles.articleDescription)}>
+                    Marketplace for Trusted AI Skills
+                  </p>
+                </div>
+              </article>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -76,17 +110,30 @@ const styles = stylex.create({
   title: {
     fontSize: fontSize["5xl"],
     color: colors.textMuted,
+    textWrap: "nowrap",
+    flexShrink: 0,
   },
   filter: {
-    overflowX: "auto",
-    paddingBottom: spacing.base,
-    scrollbarWidth: "none",
     display: "flex",
     alignItems: "center",
     gap: spacing.md,
+    overflowX: "auto",
+    overflowY: "hidden",
+    scrollbarWidth: "none",
+    width: {
+      default: "auto",
+      [breakpoints.mobile]: "100%",
+    },
+    maxWidth: "100%",
+    minWidth: 0,
+    flexShrink: 1,
+    margin: 0,
+    padding: 0,
+    listStyle: "none",
   },
   filterItem: {
     cursor: "pointer",
+    flexShrink: 0,
   },
   filterItemButton: (active: boolean) => ({
     display: "flex",
@@ -98,6 +145,7 @@ const styles = stylex.create({
     paddingLeft: "12px",
     paddingRight: "8px",
     transitionDuration: "300ms",
+    flexShrink: 0,
     backgroundColor: {
       default: active ? colors.overlayHeavy : colors.overlaySubtle,
     },
@@ -107,6 +155,7 @@ const styles = stylex.create({
   }),
   filterItemButtonLabel: (active: boolean) => ({
     fontWeight: fontWeight.medium,
+    textWrap: "nowrap",
     color: {
       default: active ? colors.white : colors.textPrimary,
     },
@@ -125,11 +174,92 @@ const styles = stylex.create({
   }),
   header: {
     display: "flex",
-    alignItems: "center",
+    flexDirection: {
+      default: "row",
+      [breakpoints.mobile]: "column",
+    },
+    alignItems: {
+      default: "center",
+      [breakpoints.mobile]: "start",
+    },
     justifyContent: "space-between",
-    gap: spacing.base,
+    gap: {
+      default: spacing.base,
+      [breakpoints.mobile]: spacing.md,
+    },
+    width: "100%",
   },
-  list: {},
-  listItem: {},
-  article: {},
+  list: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(442px, 1fr))",
+    rowGap: spacing.xl,
+    columnGap: spacing["2xl"],
+    marginTop: "32px",
+  },
+  listItem: {
+    width: "100%",
+    height: "100%",
+  },
+  article: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "start",
+    gap: "10px",
+  },
+  articleThumbnailContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+    borderRadius: "12px",
+    aspectRatio: "680 / 490",
+
+    borderWidth: "5px",
+    borderStyle: "solid",
+    borderColor: colors.surfaceDark,
+    boxShadow: `0px 0px 0px 1px ${colors.borderLight}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.bgPrimary,
+  },
+  articleThumbnail: {
+    display: "block",
+    borderRadius: "12px",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    maxHeight: "490px",
+  },
+  articleThumbnailShadow: {
+    position: "absolute",
+    backgroundColor: colors.overlaySubtle,
+    width: "calc(100% + 12px)",
+    height: "calc(100% + 12px)",
+    borderRadius: "12px",
+    boxShadow: `0px 6px 12px 0px ${colors.overlaySubtle}`,
+    pointerEvents: "none",
+    zIndex: -1,
+  },
+  articleThumbnailImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+    objectPosition: "center",
+    borderRadius: "12px",
+    transitionProperty: "transform",
+    transitionDuration: "300ms",
+    transform: {
+      default: "scale(1)",
+      [stylex.when.ancestor(":hover")]: "scale(1.05)",
+    },
+  },
+  articleTitleContainer: {},
+  articleTitle: {
+    fontWeight: fontWeight.medium,
+  },
+  articleDescription: {
+    fontSize: fontSize.md,
+    color: colors.textTertiary,
+  },
 });
