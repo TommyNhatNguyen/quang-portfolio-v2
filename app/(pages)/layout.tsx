@@ -20,7 +20,7 @@ export default MainLayout;
 
 export const styles = stylex.create({
   main: {
-    maxWidth: `calc(${variables.containerMaxWidth}px + ${variables.containerPadding} * 2)`,
+    maxWidth: `calc(${variables.containerMaxWidth} + ${variables.containerPadding} * 2)`,
     margin: "auto",
     width: "100%",
     height: "100%",

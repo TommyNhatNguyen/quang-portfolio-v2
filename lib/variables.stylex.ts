@@ -6,7 +6,7 @@ export const breakpoints = stylex.defineConsts({
 
 export const variables = stylex.defineVars({
   containerPadding: "clamp(16px, 4vw, 64px)",
-  containerMaxWidth: 1384,
+  containerMaxWidth: "1384px",
   headerPadding: {
     default: "32px",
     [breakpoints.mobile]: "24px",
