@@ -2,8 +2,10 @@
 import { colors } from "@/lib/colors.stylex";
 import { radius } from "@/lib/spacing.stylex";
 import { fontWeight } from "@/lib/typography.stylex";
-import { breakpoints, variables } from "@/lib/variables.stylex";
+import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type NavTab = (typeof NAV_TABS)[number]["key"];
@@ -13,10 +15,13 @@ const NAV_TABS = [
 ] as const;
 
 const Header = () => {
-  const [activeTab, setActiveTab] = useState<NavTab>("about");
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState<NavTab>(
+    pathname === "/" ? "about" : "work",
+  );
   const [geometry, setGeometry] = useState({ width: 0, translateX: 0 });
   const [mounted, setMounted] = useState(false);
-  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const buttonRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   useLayoutEffect(() => {
     const activeIndex = NAV_TABS.findIndex((t) => t.key === activeTab);
@@ -32,9 +37,10 @@ const Header = () => {
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.navContainer)}>
         {NAV_TABS.map(({ key, label }, i) => (
-          <button
+          <Link
+            href={`/${key === "about" ? "" : "work"}`}
             key={key}
-            ref={(el) => {
+            ref={(el: HTMLAnchorElement | null) => {
               buttonRefs.current[i] = el;
             }}
             {...stylex.props(
@@ -44,7 +50,7 @@ const Header = () => {
             onClick={() => setActiveTab(key)}
           >
             <span>{label}</span>
-          </button>
+          </Link>
         ))}
         <div
           {...stylex.props(
@@ -64,7 +70,7 @@ export default Header;
 
 function getIndicatorGeometry(
   activeIndex: number,
-  refs: Array<HTMLButtonElement | null>,
+  refs: Array<HTMLAnchorElement | null>,
 ): { width: number; translateX: number } {
   return {
     translateX: refs
@@ -85,10 +91,7 @@ const styles = stylex.create({
     alignItems: "center",
     width: "fit-content",
     marginLeft: "auto",
-    marginRight: {
-      default: "none",
-      [breakpoints.mobile]: "auto",
-    },
+    marginRight: "auto",
     padding: "4px",
     backgroundColor: colors.bgSecondary,
     borderRadius: radius.lg,
