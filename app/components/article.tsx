@@ -31,45 +31,34 @@ const Article = ({
       {...stylex.props(styles.article, disabled && styles.articleDisabled)}
     >
       {/* Thumbnail */}
-      <div
-        {...stylex.props(
-          styles.articleThumbnailContainer,
-          stylex.defaultMarker(),
-        )}
-      >
-        {isLink ? (
-          <Link
-            target="_blank"
-            href={href}
-            {...stylex.props(styles.articleThumbnail)}
-          >
-            <Image
-              {...stylex.props(styles.articleThumbnailImage)}
-              src={thumbnailSrc}
-              alt={thumbnailAlt}
-              width={680}
-              height={540}
-            />
-          </Link>
-        ) : (
-          <div
-            {...stylex.props(
-              styles.articleThumbnail,
-              styles.articleThumbnailClickable,
-            )}
-            onClick={onOpen}
-          >
-            <Image
-              {...stylex.props(styles.articleThumbnailImage)}
-              src={thumbnailSrc}
-              alt={thumbnailAlt}
-              width={680}
-              height={540}
-            />
-          </div>
-        )}
-        <div {...stylex.props(styles.articleThumbnailShadow)}></div>
-      </div>
+      {isLink ? (
+        <Link
+          target="_blank"
+          href={href}
+          {...stylex.props(styles.thumbnailWrapper)}
+        >
+          <Image
+            {...stylex.props(styles.thumbnailImage)}
+            src={thumbnailSrc}
+            alt={thumbnailAlt}
+            width={670}
+            height={480}
+          />
+        </Link>
+      ) : (
+        <div
+          {...stylex.props(styles.thumbnailWrapper, styles.thumbnailClickable)}
+          onClick={onOpen}
+        >
+          <Image
+            {...stylex.props(styles.thumbnailImage)}
+            src={thumbnailSrc}
+            alt={thumbnailAlt}
+            width={670}
+            height={480}
+          />
+        </div>
+      )}
       {/* Title */}
       <div {...stylex.props(styles.articleTitleContainer)}>
         {isLink ? (
@@ -100,49 +89,29 @@ const styles = stylex.create({
     pointerEvents: "none",
     transitionDuration: "300ms",
   },
-  articleThumbnailContainer: {
+  thumbnailWrapper: {
     width: "100%",
-    height: "100%",
-    position: "relative",
+    aspectRatio: "670 / 480.23",
     borderRadius: "12px",
-    aspectRatio: "680 / 490",
-    overflow: "hidden",
+    display: "block",
     borderWidth: "5px",
     borderStyle: "solid",
-    borderColor: colors.surfaceDark,
-    boxShadow: `0px 0px 0px 1px ${colors.borderLight}`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgPrimary,
-  },
-  articleThumbnail: {
-    display: "block",
-    borderRadius: "12px",
-    width: "100%",
-    height: "100%",
+    borderColor: "#1f1f1f",
+    boxShadow:
+      "0px 0px 0px 1px rgba(0, 0, 0, 0.12), 0px 6px 12px 0px rgba(0, 0, 0, 0.04)",
+    backgroundColor: "rgba(0, 0, 0, 0.04)",
     overflow: "hidden",
-    maxHeight: "490px",
+    position: "relative",
   },
-  articleThumbnailClickable: {
+  thumbnailClickable: {
     cursor: "pointer",
   },
-  articleThumbnailShadow: {
-    position: "absolute",
-    backgroundColor: colors.overlaySubtle,
-    width: "calc(100% + 12px)",
-    height: "calc(100% + 12px)",
-    borderRadius: "12px",
-    boxShadow: `0px 6px 12px 0px ${colors.overlaySubtle}`,
-    pointerEvents: "none",
-    zIndex: -1,
-  },
-  articleThumbnailImage: {
+  thumbnailImage: {
     width: "100%",
     height: "100%",
     objectFit: "contain",
     objectPosition: "center",
-    borderRadius: "12px",
+    display: "block",
     transitionProperty: "transform",
     transitionDuration: "300ms",
     transform: {

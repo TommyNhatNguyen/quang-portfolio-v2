@@ -16,21 +16,29 @@ const ARROW_NEXT_SVG = `<svg width="27" height="19" viewBox="0 0 27 19" fill="no
 const SPACING = 48;
 const BUTTON_SIZE = 56;
 
-function updateButtonPositions(pswp: InstanceType<typeof import("photoswipe").default>) {
-  const slide = (pswp as any).currSlide;
-  if (!slide?.bounds?.center) return;
-
-  const currZoomLevel: number = slide.currZoomLevel;
-  const imgWidth = slide.width * currZoomLevel;
-  const imgHeight = slide.height * currZoomLevel;
-  const imgLeft: number = slide.bounds.center.x;
-  const imgTop: number = slide.bounds.center.y;
-
+function updateButtonPositions(
+  pswp: InstanceType<typeof import("photoswipe").default>,
+) {
   const root = (pswp as any).element as HTMLElement | null;
   if (!root) return;
 
-  const arrowPrev = root.querySelector<HTMLElement>(".pswp__button--arrow--prev");
-  const arrowNext = root.querySelector<HTMLElement>(".pswp__button--arrow--next");
+  const currSlide = (pswp as any).currSlide;
+  const contentEl = currSlide?.content?.element as HTMLElement | null;
+  if (!contentEl) return;
+
+  // getBoundingClientRect gives the actual rendered screen position after all CSS transforms
+  const rect = contentEl.getBoundingClientRect();
+  const imgLeft = rect.left;
+  const imgTop = rect.top;
+  const imgWidth = rect.width;
+  const imgHeight = rect.height;
+
+  const arrowPrev = root.querySelector<HTMLElement>(
+    ".pswp__button--arrow--prev",
+  );
+  const arrowNext = root.querySelector<HTMLElement>(
+    ".pswp__button--arrow--next",
+  );
   const closeBtn = root.querySelector<HTMLElement>(".pswp__button--close");
 
   const arrowTop = imgTop + imgHeight / 2 - BUTTON_SIZE / 2;
@@ -72,9 +80,38 @@ export function useGallery(images: GalleryImage[]) {
         arrowNextSVG: ARROW_NEXT_SVG,
       });
 
+      pswp.on("contentLoad", (e) => {
+        const { content } = e;
+        e.preventDefault();
+
+        const wrapper = document.createElement("div");
+        wrapper.style.cssText = [
+          `width: ${content.data.width}px`,
+          `height: ${content.data.height}px`,
+          "border-radius: 12px",
+          "border: 5px solid #1f1f1f",
+          "box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.12), 0px 6px 12px 0px rgba(0, 0, 0, 0.04)",
+          "background-color: rgba(255, 255, 255, 0.12)",
+          "background-filter: blur(1px)",
+          "overflow: hidden",
+        ].join("; ");
+
+        const img = document.createElement("img");
+        img.src = content.data.src as string;
+        img.alt = (content.data.alt as string) ?? "";
+        img.style.cssText =
+          "width: 100%; height: 100%; object-fit: contain; object-position: center; display: block;";
+        img.onload = () => (content as any).onLoaded();
+        img.onerror = () => (content as any).onError();
+
+        wrapper.appendChild(img);
+        (content as any).element = wrapper;
+      });
+
       pswp.on("afterInit", () => updateButtonPositions(pswp));
       pswp.on("zoomPanUpdate", () => updateButtonPositions(pswp));
       pswp.on("resize", () => updateButtonPositions(pswp));
+      pswp.on("change", () => updateButtonPositions(pswp));
 
       pswp.init();
     },

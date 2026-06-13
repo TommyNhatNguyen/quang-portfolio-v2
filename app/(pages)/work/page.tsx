@@ -90,8 +90,8 @@ const mockWork: WorkItem[] = [
 
 const galleryImages = mockWork.map((work) => ({
   src: work.thumbnailSrc,
-  width: 680,
-  height: 540,
+  width: 670,
+  height: 480,
   alt: work.thumbnailAlt,
 }));
 
