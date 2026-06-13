@@ -61,9 +61,15 @@ const Page = () => {
       {/* List */}
       <ul {...stylex.props(styles.list)}>
         {Array.from({ length: 10 }).map((_, index) => {
+          const isDiabled = index == 1;
           return (
             <li key={index} {...stylex.props(styles.listItem)}>
-              <article {...stylex.props(styles.article)}>
+              <article
+                {...stylex.props(
+                  styles.article,
+                  isDiabled && styles.articleDisabled,
+                )}
+              >
                 {/* Thumbnail */}
                 <div
                   {...stylex.props(
@@ -206,6 +212,11 @@ const styles = stylex.create({
     flexDirection: "column",
     alignItems: "start",
     gap: "10px",
+  },
+  articleDisabled: {
+    opacity: 0.2,
+    pointerEvents: "none",
+    transitionDuration: "300ms",
   },
   articleThumbnailContainer: {
     width: "100%",
