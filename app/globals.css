@@ -150,7 +150,17 @@
 @stylex;
 
 /* PhotoSwipe custom button styles */
+
+/* Allow close button to overflow past the 60px top bar */
+.pswp__top-bar {
+  overflow: visible !important;
+}
+
+/* Close button: absolute within the top bar (which sits at overlay top-left, full width) */
 .pswp__button--close {
+  position: absolute !important;
+  top: 80px !important;
+  right: 80px !important;
   width: 56px !important;
   height: 56px !important;
   border-radius: 50% !important;
@@ -158,9 +168,8 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  overflow: visible !important;
-  align-self: center !important;
-  margin-right: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .pswp__button--close:hover,
@@ -169,6 +178,7 @@
   background: white !important;
 }
 
+/* Arrow buttons: dark circles, vertically centered at viewport edges */
 .pswp__button--arrow {
   width: 56px !important;
   height: 56px !important;
@@ -177,7 +187,6 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  overflow: visible !important;
   margin-top: -28px !important;
 }
 
@@ -188,9 +197,9 @@
 }
 
 .pswp__button--arrow--prev {
-  left: 16px !important;
+  left: 32px !important;
 }
 
 .pswp__button--arrow--next {
-  right: 16px !important;
+  right: 32px !important;
 }

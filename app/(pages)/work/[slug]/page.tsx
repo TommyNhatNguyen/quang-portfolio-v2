@@ -1,3 +1,4 @@
+import "@/app/styles/work-detail.css";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
 import {
@@ -10,7 +11,6 @@ import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import Image from "next/image";
 import Link from "next/link";
-import "@/app/styles/work-detail.css";
 
 const Page = () => {
   return (
@@ -43,10 +43,7 @@ const Page = () => {
           </div>
         </header>
 
-        <div
-          className="work-detail__content"
-          {...stylex.props(styles.richText)}
-        >
+        <div className="work-detail__content">
           <aside>
             <h2>Summary of the article</h2>
             <p>
@@ -94,9 +91,9 @@ const Page = () => {
           <p>
             In today&apos;s digital world, users are no longer patient with
             disjointed experiences or complex interfaces. They expect
-            seamlessness - from the moment they open the app to when they achieve
-            their goals. Every second of waiting, every unnecessary click is an
-            opportunity for them to leave.
+            seamlessness - from the moment they open the app to when they
+            achieve their goals. Every second of waiting, every unnecessary
+            click is an opportunity for them to leave.
           </p>
 
           <h2>Human-centered design principles</h2>
@@ -203,12 +200,5 @@ const styles = stylex.create({
     width: "100%",
     marginTop: spacing.lg,
     marginBottom: 0,
-  },
-  richText: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "start",
-    width: "100%",
-    maxWidth: "652px",
   },
 });
