@@ -6,7 +6,7 @@ import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
-import { useGallery } from "./gallery";
+import { GalleryImage, useGallery } from "./gallery";
 
 const filters = [
   {
@@ -23,6 +23,96 @@ const filters = [
     key: "design",
     label: "Creative",
     count: 4,
+  },
+];
+
+type WorkItem = {
+  id: number;
+  title: string;
+  description: string;
+  thumbnailSrc: string;
+  thumbnailAlt: string;
+  href: string;
+  disabled?: boolean;
+  galleryImages: GalleryImage[];
+};
+
+const mockWork: WorkItem[] = [
+  {
+    id: 1,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
+  },
+  {
+    id: 2,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    disabled: true,
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
+  },
+  {
+    id: 3,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
+  },
+  {
+    id: 4,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
+  },
+  {
+    id: 5,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
+  },
+  {
+    id: 6,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/avatar.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    galleryImages: [
+      { src: "/avatar.jpg", width: 680, height: 540 },
+      { src: "/avatar.jpg", width: 680, height: 540 },
+    ],
   },
 ];
 
@@ -61,22 +151,19 @@ const Page = () => {
       </div>
       {/* List */}
       <ul {...stylex.props(styles.list)}>
-        {Array.from({ length: 10 }).map((_, index) => {
-          const isDiabled = index == 1;
-          return (
-            <li key={index} {...stylex.props(styles.listItem)}>
-              <Article
-                disabled={isDiabled}
-                isLink={false}
-                onOpen={() =>
-                  openGallery([
-                    { src: "/avatar.jpg", width: 680, height: 540 },
-                  ])
-                }
-              />
-            </li>
-          );
-        })}
+        {mockWork.map((work) => (
+          <li key={work.id} {...stylex.props(styles.listItem)}>
+            <Article
+              disabled={work.disabled}
+              isLink={false}
+              thumbnailSrc={work.thumbnailSrc}
+              thumbnailAlt={work.thumbnailAlt}
+              title={work.title}
+              description={work.description}
+              onOpen={() => openGallery(work.galleryImages)}
+            />
+          </li>
+        ))}
       </ul>
     </section>
   );

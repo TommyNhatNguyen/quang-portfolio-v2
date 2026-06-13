@@ -25,6 +25,7 @@ export function useGallery() {
       closeSVG: CLOSE_SVG,
       arrowPrevSVG: ARROW_PREV_SVG,
       arrowNextSVG: ARROW_NEXT_SVG,
+      
     });
     pswp.init();
   }, []);
