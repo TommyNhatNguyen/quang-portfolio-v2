@@ -213,7 +213,7 @@ const styles = stylex.create({
     position: "relative",
     borderRadius: "12px",
     aspectRatio: "680 / 490",
-
+    overflow: "hidden",
     borderWidth: "5px",
     borderStyle: "solid",
     borderColor: colors.surfaceDark,

@@ -6,7 +6,13 @@ import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 type NavTab = (typeof NAV_TABS)[number]["key"];
 const NAV_TABS = [
@@ -16,6 +22,7 @@ const NAV_TABS = [
 
 const Header = () => {
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<NavTab>(
     pathname === "/" ? "about" : "work",
   );
@@ -47,7 +54,7 @@ const Header = () => {
               styles.navButton,
               activeTab === key && styles.navButtonActive,
             )}
-            onClick={() => setActiveTab(key)}
+            onClick={() => startTransition(() => setActiveTab(key))}
           >
             <span>{label}</span>
           </Link>
