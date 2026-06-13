@@ -1,6 +1,6 @@
 import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
-import Header from "../components/header";
+
 type Props = {
   children: React.ReactNode;
 };
@@ -8,9 +8,6 @@ type Props = {
 const MainLayout = (props: Props) => {
   return (
     <main {...stylex.props(styles.main)}>
-      {/* Header */}
-      <Header />
-      {/* Body */}
       {props.children}
     </main>
   );

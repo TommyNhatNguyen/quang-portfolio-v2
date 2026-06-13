@@ -100,7 +100,7 @@ export function useGallery(images: GalleryImage[]) {
         img.src = content.data.src as string;
         img.alt = (content.data.alt as string) ?? "";
         img.style.cssText =
-          "width: 100%; height: 100%; object-fit: contain; object-position: center; display: block;";
+          "width: 102%; height: 102%; object-fit: fill; object-position: top; display: block;";
         img.onload = () => (content as any).onLoaded();
         img.onerror = () => (content as any).onError();
 

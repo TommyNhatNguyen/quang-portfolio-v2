@@ -17,7 +17,8 @@
     max-width: 1232px;
     padding-left: 48px;
     padding-right: 48px;
-    padding-bottom: 32px;
+    padding-bottom: 96px;
+    padding-top: 96px;
     border-radius: 16px;
     background-color: #ffffff;
   }
