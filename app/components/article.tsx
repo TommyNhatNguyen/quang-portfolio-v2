@@ -1,3 +1,4 @@
+"use client";
 import { colors } from "@/lib/colors.stylex";
 import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import * as stylex from "@stylexjs/stylex";
@@ -6,9 +7,25 @@ import Link from "next/link";
 
 type Props = {
   disabled?: boolean;
+  isLink?: boolean;
+  href?: string;
+  thumbnailSrc?: string;
+  thumbnailAlt?: string;
+  title?: string;
+  description?: string;
+  onOpen?: () => void;
 };
 
-const Article = ({ disabled = false }: Props) => {
+const Article = ({
+  disabled = false,
+  isLink = true,
+  href = "#",
+  thumbnailSrc = "/avatar.jpg",
+  thumbnailAlt = "work",
+  title = "SkillPod",
+  description = "Marketplace for Trusted AI Skills",
+  onOpen,
+}: Props) => {
   return (
     <article
       {...stylex.props(styles.article, disabled && styles.articleDisabled)}
@@ -20,25 +37,49 @@ const Article = ({ disabled = false }: Props) => {
           stylex.defaultMarker(),
         )}
       >
-        <Link href={"#"} {...stylex.props(styles.articleThumbnail)}>
-          <Image
-            {...stylex.props(styles.articleThumbnailImage)}
-            src={"/avatar.jpg"}
-            alt="work"
-            width={680}
-            height={540}
-          />
-        </Link>
+        {isLink ? (
+          <Link
+            target="_blank"
+            href={href}
+            {...stylex.props(styles.articleThumbnail)}
+          >
+            <Image
+              {...stylex.props(styles.articleThumbnailImage)}
+              src={thumbnailSrc}
+              alt={thumbnailAlt}
+              width={680}
+              height={540}
+            />
+          </Link>
+        ) : (
+          <div
+            {...stylex.props(
+              styles.articleThumbnail,
+              styles.articleThumbnailClickable,
+            )}
+            onClick={onOpen}
+          >
+            <Image
+              {...stylex.props(styles.articleThumbnailImage)}
+              src={thumbnailSrc}
+              alt={thumbnailAlt}
+              width={680}
+              height={540}
+            />
+          </div>
+        )}
         <div {...stylex.props(styles.articleThumbnailShadow)}></div>
       </div>
       {/* Title */}
       <div {...stylex.props(styles.articleTitleContainer)}>
-        <Link href={"#"} {...stylex.props(styles.articleTitle)}>
-          SkillPod
-        </Link>
-        <p {...stylex.props(styles.articleDescription)}>
-          Marketplace for Trusted AI Skills
-        </p>
+        {isLink ? (
+          <Link href={href} {...stylex.props(styles.articleTitle)}>
+            {title}
+          </Link>
+        ) : (
+          <span {...stylex.props(styles.articleTitle)}>{title}</span>
+        )}
+        <p {...stylex.props(styles.articleDescription)}>{description}</p>
       </div>
     </article>
   );
@@ -82,6 +123,9 @@ const styles = stylex.create({
     height: "100%",
     overflow: "hidden",
     maxHeight: "490px",
+  },
+  articleThumbnailClickable: {
+    cursor: "pointer",
   },
   articleThumbnailShadow: {
     position: "absolute",

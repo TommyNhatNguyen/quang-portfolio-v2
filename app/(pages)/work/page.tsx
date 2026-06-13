@@ -6,6 +6,7 @@ import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
+import { useGallery } from "./gallery";
 
 const filters = [
   {
@@ -27,6 +28,7 @@ const filters = [
 
 const Page = () => {
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const { openGallery } = useGallery();
   return (
     <section {...stylex.props(styles.section)}>
       {/* Header */}
@@ -63,7 +65,15 @@ const Page = () => {
           const isDiabled = index == 1;
           return (
             <li key={index} {...stylex.props(styles.listItem)}>
-              <Article disabled={isDiabled} />
+              <Article
+                disabled={isDiabled}
+                isLink={false}
+                onOpen={() =>
+                  openGallery([
+                    { src: "/avatar.jpg", width: 680, height: 540 },
+                  ])
+                }
+              />
             </li>
           );
         })}

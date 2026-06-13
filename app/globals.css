@@ -148,3 +148,49 @@
 } /* end @layer resets */
 
 @stylex;
+
+/* PhotoSwipe custom button styles */
+.pswp__button--close {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  align-self: center !important;
+  margin-right: 16px !important;
+}
+
+.pswp__button--close:hover,
+.pswp__button--close:active,
+.pswp__button--close:focus {
+  background: white !important;
+}
+
+.pswp__button--arrow {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  margin-top: -28px !important;
+}
+
+.pswp__button--arrow:hover,
+.pswp__button--arrow:active,
+.pswp__button--arrow:focus {
+  background: rgba(0, 0, 0, 0.75) !important;
+}
+
+.pswp__button--arrow--prev {
+  left: 16px !important;
+}
+
+.pswp__button--arrow--next {
+  right: 16px !important;
+}

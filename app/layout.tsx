@@ -19,6 +19,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "quang.laam — Portfolio",
   description: "Product designer & developer portfolio",
+  openGraph: {
+    title: "quang.laam — Portfolio",
+    description: "Product designer & developer portfolio",
+    type: "website",
+    url: "https://quang.laam.com",
+    siteName: "quang.laam — Portfolio",
+    images: [
+      {
+        url: "/meta-image.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
 };
 
 initGSAP();
