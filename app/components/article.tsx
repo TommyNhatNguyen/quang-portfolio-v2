@@ -109,7 +109,7 @@ const styles = stylex.create({
   thumbnailImage: {
     width: "100%",
     height: "100%",
-    objectFit: "contain",
+    objectFit: "fill",
     objectPosition: "center",
     display: "block",
     transitionProperty: "transform",

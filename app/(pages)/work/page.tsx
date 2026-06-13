@@ -26,6 +26,8 @@ const filters = [
   },
 ];
 
+type WorkType = "product" | "creative";
+
 type WorkItem = {
   id: number;
   title: string;
@@ -34,6 +36,7 @@ type WorkItem = {
   thumbnailAlt: string;
   href: string;
   disabled?: boolean;
+  type: WorkType;
 };
 
 const mockWork: WorkItem[] = [
@@ -41,63 +44,95 @@ const mockWork: WorkItem[] = [
     id: 1,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-1.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
+    type: "product",
   },
   {
     id: 2,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-2.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    disabled: true,
+    type: "product",
   },
   {
     id: 3,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-3.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
+    type: "product",
   },
   {
     id: 4,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-4.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
+    type: "creative",
   },
   {
     id: 5,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-5.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
+    type: "creative",
   },
   {
     id: 6,
     title: "SkillPod",
     description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/avatar.jpg",
+    thumbnailSrc: "/work-6.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
+    type: "creative",
+  },
+  {
+    id: 7,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/work-7.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    type: "creative",
+  },
+  {
+    id: 8,
+    title: "SkillPod",
+    description: "Marketplace for Trusted AI Skills",
+    thumbnailSrc: "/work-8.jpg",
+    thumbnailAlt: "work",
+    href: "/work/skillpod",
+    type: "creative",
   },
 ];
 
-const galleryImages = mockWork.map((work) => ({
+const creativeWork = mockWork.filter((w) => w.type === "creative");
+
+const galleryImages = creativeWork.map((work) => ({
   src: work.thumbnailSrc,
   width: 670,
   height: 480,
   alt: work.thumbnailAlt,
 }));
 
+const filterTypeMap: Record<string, WorkType | null> = {
+  all: null,
+  web: "product",
+  design: "creative",
+};
+
 const Page = () => {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const { openGallery } = useGallery(galleryImages);
+
   return (
     <section {...stylex.props(styles.section)}>
       {/* Header */}
@@ -130,19 +165,30 @@ const Page = () => {
       </div>
       {/* List */}
       <ul {...stylex.props(styles.list)}>
-        {mockWork.map((work, index) => (
-          <li key={work.id} {...stylex.props(styles.listItem)}>
-            <Article
-              disabled={work.disabled}
-              isLink={false}
-              thumbnailSrc={work.thumbnailSrc}
-              thumbnailAlt={work.thumbnailAlt}
-              title={work.title}
-              description={work.description}
-              onOpen={() => openGallery(index)}
-            />
-          </li>
-        ))}
+        {mockWork.map((work) => {
+          const isLink = work.type === "product";
+          const filterType = filterTypeMap[activeFilter];
+          const isDisabled =
+            work.disabled || (filterType !== null && work.type !== filterType);
+          const galleryIndex = isLink
+            ? -1
+            : creativeWork.findIndex((w) => w.id === work.id);
+
+          return (
+            <li key={work.id} {...stylex.props(styles.listItem)}>
+              <Article
+                disabled={isDisabled}
+                isLink={isLink}
+                href={work.href}
+                thumbnailSrc={work.thumbnailSrc}
+                thumbnailAlt={work.thumbnailAlt}
+                title={work.title}
+                description={work.description}
+                onOpen={!isLink ? () => openGallery(galleryIndex) : undefined}
+              />
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -154,6 +200,7 @@ const styles = stylex.create({
   section: {
     display: "flex",
     flexDirection: "column",
+    paddingBottom: spacing["4xl"],
   },
   title: {
     fontSize: fontSize["5xl"],
