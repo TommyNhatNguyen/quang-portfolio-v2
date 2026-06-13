@@ -6,7 +6,7 @@ import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
-import { GalleryImage, useGallery } from "./gallery";
+import { useGallery } from "./gallery";
 
 const filters = [
   {
@@ -34,7 +34,6 @@ type WorkItem = {
   thumbnailAlt: string;
   href: string;
   disabled?: boolean;
-  galleryImages: GalleryImage[];
 };
 
 const mockWork: WorkItem[] = [
@@ -45,11 +44,6 @@ const mockWork: WorkItem[] = [
     thumbnailSrc: "/avatar.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
   {
     id: 2,
@@ -59,10 +53,6 @@ const mockWork: WorkItem[] = [
     thumbnailAlt: "work",
     href: "/work/skillpod",
     disabled: true,
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
   {
     id: 3,
@@ -71,11 +61,6 @@ const mockWork: WorkItem[] = [
     thumbnailSrc: "/avatar.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
   {
     id: 4,
@@ -84,10 +69,6 @@ const mockWork: WorkItem[] = [
     thumbnailSrc: "/avatar.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
   {
     id: 5,
@@ -96,11 +77,6 @@ const mockWork: WorkItem[] = [
     thumbnailSrc: "/avatar.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
   {
     id: 6,
@@ -109,16 +85,19 @@ const mockWork: WorkItem[] = [
     thumbnailSrc: "/avatar.jpg",
     thumbnailAlt: "work",
     href: "/work/skillpod",
-    galleryImages: [
-      { src: "/avatar.jpg", width: 680, height: 540 },
-      { src: "/avatar.jpg", width: 680, height: 540 },
-    ],
   },
 ];
 
+const galleryImages = mockWork.map((work) => ({
+  src: work.thumbnailSrc,
+  width: 680,
+  height: 540,
+  alt: work.thumbnailAlt,
+}));
+
 const Page = () => {
   const [activeFilter, setActiveFilter] = useState<string>("all");
-  const { openGallery } = useGallery();
+  const { openGallery } = useGallery(galleryImages);
   return (
     <section {...stylex.props(styles.section)}>
       {/* Header */}
@@ -151,7 +130,7 @@ const Page = () => {
       </div>
       {/* List */}
       <ul {...stylex.props(styles.list)}>
-        {mockWork.map((work) => (
+        {mockWork.map((work, index) => (
           <li key={work.id} {...stylex.props(styles.listItem)}>
             <Article
               disabled={work.disabled}
@@ -160,7 +139,7 @@ const Page = () => {
               thumbnailAlt={work.thumbnailAlt}
               title={work.title}
               description={work.description}
-              onOpen={() => openGallery(work.galleryImages)}
+              onOpen={() => openGallery(index)}
             />
           </li>
         ))}

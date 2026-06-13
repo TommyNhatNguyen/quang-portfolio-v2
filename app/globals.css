@@ -151,16 +151,14 @@
 
 /* PhotoSwipe custom button styles */
 
-/* Allow close button to overflow past the 60px top bar */
+/* Allow close button to overflow past the 60px top bar height */
 .pswp__top-bar {
   overflow: visible !important;
 }
 
-/* Close button: absolute within the top bar (which sits at overlay top-left, full width) */
+/* Close button: positioned absolutely via JS relative to the slide image */
 .pswp__button--close {
   position: absolute !important;
-  top: 80px !important;
-  right: 80px !important;
   width: 56px !important;
   height: 56px !important;
   border-radius: 50% !important;
@@ -178,7 +176,7 @@
   background: white !important;
 }
 
-/* Arrow buttons: dark circles, vertically centered at viewport edges */
+/* Arrow buttons: dark circles, positioned via JS relative to the slide image */
 .pswp__button--arrow {
   width: 56px !important;
   height: 56px !important;
@@ -187,19 +185,10 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin-top: -28px !important;
 }
 
 .pswp__button--arrow:hover,
 .pswp__button--arrow:active,
 .pswp__button--arrow:focus {
   background: rgba(0, 0, 0, 0.75) !important;
-}
-
-.pswp__button--arrow--prev {
-  left: 32px !important;
-}
-
-.pswp__button--arrow--next {
-  right: 32px !important;
 }
