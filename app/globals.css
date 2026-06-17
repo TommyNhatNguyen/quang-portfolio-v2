@@ -168,6 +168,8 @@
   justify-content: center !important;
   padding: 0 !important;
   margin: 0 !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .pswp__button--close:hover,
@@ -185,6 +187,8 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .pswp__button--arrow:hover,

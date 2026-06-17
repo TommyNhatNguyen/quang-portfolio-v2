@@ -16,18 +16,38 @@ const ARROW_NEXT_SVG = `<svg width="27" height="19" viewBox="0 0 27 19" fill="no
 const SPACING = 48;
 const BUTTON_SIZE = 56;
 
+function hideButtons(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(".pswp__button--close, .pswp__button--arrow")
+    .forEach((button) => {
+      button.style.opacity = "0";
+      button.style.pointerEvents = "none";
+    });
+}
+
+function showButtons(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(".pswp__button--close, .pswp__button--arrow")
+    .forEach((button) => {
+      button.style.opacity = "1";
+      button.style.pointerEvents = "auto";
+    });
+}
+
 function updateButtonPositions(
   pswp: InstanceType<typeof import("photoswipe").default>,
-) {
+): boolean {
   const root = (pswp as any).element as HTMLElement | null;
-  if (!root) return;
+  if (!root) return false;
 
   const currSlide = (pswp as any).currSlide;
   const contentEl = currSlide?.content?.element as HTMLElement | null;
-  if (!contentEl) return;
+  if (!contentEl) return false;
 
   // getBoundingClientRect gives the actual rendered screen position after all CSS transforms
   const rect = contentEl.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return false;
+
   const imgLeft = rect.left;
   const imgTop = rect.top;
   const imgWidth = rect.width;
@@ -63,6 +83,27 @@ function updateButtonPositions(
     closeBtn.style.right = "auto";
     closeBtn.style.margin = "0";
   }
+
+  return true;
+}
+
+function syncButtonPositions(
+  pswp: InstanceType<typeof import("photoswipe").default>,
+) {
+  const root = (pswp as any).element as HTMLElement | null;
+  if (!root) return;
+
+  if (updateButtonPositions(pswp)) {
+    showButtons(root);
+  }
+}
+
+function scheduleButtonPositionSync(
+  pswp: InstanceType<typeof import("photoswipe").default>,
+) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => syncButtonPositions(pswp));
+  });
 }
 
 export function useGallery(images: GalleryImage[]) {
@@ -108,10 +149,19 @@ export function useGallery(images: GalleryImage[]) {
         (content as any).element = wrapper;
       });
 
-      pswp.on("afterInit", () => updateButtonPositions(pswp));
-      pswp.on("zoomPanUpdate", () => updateButtonPositions(pswp));
-      pswp.on("resize", () => updateButtonPositions(pswp));
-      pswp.on("change", () => updateButtonPositions(pswp));
+      pswp.on("afterInit", () => {
+        const root = (pswp as any).element as HTMLElement | null;
+        if (root) hideButtons(root);
+      });
+      pswp.on("openingAnimationEnd", () => scheduleButtonPositionSync(pswp));
+      pswp.on("loadComplete", () => scheduleButtonPositionSync(pswp));
+      pswp.on("zoomPanUpdate", () => syncButtonPositions(pswp));
+      pswp.on("resize", () => scheduleButtonPositionSync(pswp));
+      pswp.on("change", () => {
+        const root = (pswp as any).element as HTMLElement | null;
+        if (root) hideButtons(root);
+        scheduleButtonPositionSync(pswp);
+      });
 
       pswp.init();
     },
