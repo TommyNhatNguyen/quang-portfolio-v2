@@ -1,3 +1,4 @@
+import { Loader } from "@/app/components/loader";
 import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 
@@ -9,6 +10,7 @@ const MainLayout = (props: Props) => {
   return (
     <main {...stylex.props(styles.main)}>
       {props.children}
+      <Loader />
     </main>
   );
 };
