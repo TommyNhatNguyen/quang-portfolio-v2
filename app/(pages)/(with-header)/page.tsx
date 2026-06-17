@@ -336,6 +336,7 @@ const styles = stylex.create({
   stackIcons: {
     display: "flex",
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.xl,
   },
   stackIcon: {
