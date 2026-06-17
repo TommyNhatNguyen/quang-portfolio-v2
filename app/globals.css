@@ -180,8 +180,10 @@
 
 /* Arrow buttons: dark circles, positioned via JS relative to the slide image */
 .pswp__button--arrow {
+  position: absolute !important;
   width: 56px !important;
   height: 56px !important;
+  margin-top: 0 !important;
   border-radius: 50% !important;
   background: rgba(0, 0, 0, 0.6) !important;
   display: flex !important;
@@ -189,6 +191,12 @@
   justify-content: center !important;
   opacity: 0;
   pointer-events: none;
+  z-index: 10;
+}
+
+/* PhotoSwipe hides arrows on touch — keep custom layout visible on phones */
+.pswp--touch .pswp__button--arrow {
+  visibility: visible !important;
 }
 
 .pswp__button--arrow:hover,

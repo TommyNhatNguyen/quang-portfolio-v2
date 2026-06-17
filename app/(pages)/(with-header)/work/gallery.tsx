@@ -81,19 +81,21 @@ function updateButtonPositions(
   const closeBtn = root.querySelector<HTMLElement>(".pswp__button--close");
 
   if (isMobileViewport()) {
+    const arrowTop = imgTop + imgHeight + MOBILE_PADDING;
+
     if (closeBtn) {
       closeBtn.style.top = `${imgTop - MOBILE_PADDING - BUTTON_SIZE}px`;
       closeBtn.style.left = `${imgLeft + (imgWidth - BUTTON_SIZE) / 2}px`;
       closeBtn.style.right = "auto";
+      closeBtn.style.bottom = "auto";
       closeBtn.style.margin = "0";
     }
-
-    const arrowTop = imgTop + imgHeight + MOBILE_PADDING;
 
     if (arrowPrev) {
       arrowPrev.style.left = `${imgLeft}px`;
       arrowPrev.style.right = "auto";
       arrowPrev.style.top = `${arrowTop}px`;
+      arrowPrev.style.bottom = "auto";
       arrowPrev.style.marginTop = "0";
     }
 
@@ -101,6 +103,7 @@ function updateButtonPositions(
       arrowNext.style.left = `${imgLeft + imgWidth - BUTTON_SIZE}px`;
       arrowNext.style.right = "auto";
       arrowNext.style.top = `${arrowTop}px`;
+      arrowNext.style.bottom = "auto";
       arrowNext.style.marginTop = "0";
     }
   } else {
