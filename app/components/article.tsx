@@ -83,11 +83,11 @@ const styles = stylex.create({
     flexDirection: "column",
     alignItems: "start",
     gap: "10px",
+    transitionDuration: "300ms",
   },
   articleDisabled: {
     opacity: 0.2,
     pointerEvents: "none",
-    transitionDuration: "300ms",
   },
   thumbnailWrapper: {
     width: "100%",

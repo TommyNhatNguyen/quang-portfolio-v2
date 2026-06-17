@@ -203,7 +203,10 @@ const styles = stylex.create({
     paddingBottom: spacing["4xl"],
   },
   title: {
-    fontSize: fontSize["5xl"],
+    fontSize: {
+      default: fontSize["5xl"],
+      [breakpoints.mobile]: fontSize["3xl"],
+    },
     color: colors.textMuted,
     textWrap: "nowrap",
     flexShrink: 0,
@@ -251,9 +254,7 @@ const styles = stylex.create({
   filterItemButtonLabel: (active: boolean) => ({
     fontWeight: fontWeight.medium,
     textWrap: "nowrap",
-    color: {
-      default: active ? colors.white : colors.textPrimary,
-    },
+    color: active ? colors.white : colors.textPrimary,
   }),
   filterItemButtonCount: (active: boolean) => ({
     fontSize: fontSize.xs,
@@ -263,6 +264,7 @@ const styles = stylex.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.full,
+    color: colors.textPrimary,
     backgroundColor: {
       default: active ? colors.white : colors.overlaySubtle,
     },
@@ -286,7 +288,10 @@ const styles = stylex.create({
   },
   list: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(442px, 1fr))",
+    gridTemplateColumns: {
+      default: "repeat(auto-fill, minmax(442px, 1fr))",
+      [breakpoints.mobile]: "1fr",
+    },
     rowGap: spacing.xl,
     columnGap: spacing["2xl"],
     marginTop: "32px",
