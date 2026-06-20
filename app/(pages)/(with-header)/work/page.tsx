@@ -1,161 +1,206 @@
 "use client";
 import Article from "@/app/components/article";
+import { Article as ArticleType } from "@/app/interface/article.interface";
+import { Category } from "@/app/interface/category.interface";
+import { articlesService } from "@/app/services/articles-service";
+import { categoriesService } from "@/app/services/categories-service";
+import { getImage } from "@/app/utils/getImage";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
 import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useGallery } from "./gallery";
+const PAGE_SIZE = 12;
 
-const filters = [
-  {
-    key: "all",
-    label: "All work",
-    count: 14,
-  },
-  {
-    key: "web",
-    label: "Product",
-    count: 10,
-  },
-  {
-    key: "design",
-    label: "Creative",
-    count: 4,
-  },
-];
+const pulse = stylex.keyframes({
+  "0%, 100%": { opacity: 0.2, transform: "scale(0.8)" },
+  "50%": { opacity: 1, transform: "scale(1)" },
+});
 
-type WorkType = "product" | "creative";
+type FetchParams = { filter: string; page: number };
 
-type WorkItem = {
-  id: number;
-  title: string;
-  description: string;
-  thumbnailSrc: string;
-  thumbnailAlt: string;
-  href: string;
-  disabled?: boolean;
-  type: WorkType;
-};
+const WorkPage = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [articles, setArticles] = useState<ArticleType[]>([]);
+  const [fetchParams, setFetchParams] = useState<FetchParams>({
+    filter: "all",
+    page: 1,
+  });
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [filterCounts, setFilterCounts] = useState<Record<string, number>>({});
 
-const mockWork: WorkItem[] = [
-  {
-    id: 1,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-1.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "product",
-  },
-  {
-    id: 2,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-2.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "product",
-  },
-  {
-    id: 3,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-3.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "product",
-  },
-  {
-    id: 4,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-4.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "creative",
-  },
-  {
-    id: 5,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-5.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "creative",
-  },
-  {
-    id: 6,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-6.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "creative",
-  },
-  {
-    id: 7,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-7.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "creative",
-  },
-  {
-    id: 8,
-    title: "SkillPod",
-    description: "Marketplace for Trusted AI Skills",
-    thumbnailSrc: "/work-8.jpg",
-    thumbnailAlt: "work",
-    href: "/work/skillpod",
-    type: "creative",
-  },
-];
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const hasMoreRef = useRef(true);
+  const loadingRef = useRef(false);
 
-const creativeWork = mockWork.filter((w) => w.type === "creative");
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
 
-const galleryImages = creativeWork.map((work) => ({
-  src: work.thumbnailSrc,
-  width: 670,
-  height: 480,
-  alt: work.thumbnailAlt,
-}));
+  // Fetch categories then pre-fetch each category's total count
+  useEffect(() => {
+    categoriesService
+      .getCategories()
+      .then(({ data }) => {
+        setCategories(data);
+        return Promise.all(
+          data.map((cat) =>
+            articlesService
+              .getArticles({
+                pagination: { page: 1, pageSize: 1 },
+                filters: { categories: { slug: { $eq: cat.slug } } },
+              })
+              .then(({ meta }) => ({
+                slug: cat.slug,
+                total: meta.pagination?.total ?? 0,
+              })),
+          ),
+        );
+      })
+      .then((counts) => {
+        setFilterCounts((prev) => {
+          const next = { ...prev };
+          counts.forEach(({ slug, total }) => {
+            next[slug] = total;
+          });
+          return next;
+        });
+      })
+      .catch(() => {});
+  }, []);
 
-const filterTypeMap: Record<string, WorkType | null> = {
-  all: null,
-  web: "product",
-  design: "creative",
-};
+  // Fetch articles whenever filter or page changes
+  useEffect(() => {
+    let cancelled = false;
 
-const Page = () => {
-  const [activeFilter, setActiveFilter] = useState<string>("all");
+    const doFetch = async () => {
+      setLoading(true);
+      try {
+        const { filter, page } = fetchParams;
+        const { data, meta } = await articlesService.getArticles({
+          pagination: { page, pageSize: PAGE_SIZE },
+          ...(filter !== "all" && {
+            filters: { categories: { slug: { $eq: filter } } },
+          }),
+        });
+
+        if (!cancelled) {
+          setArticles((prev) => (page === 1 ? data : [...prev, ...data]));
+          setFilterCounts((prev) => ({
+            ...prev,
+            [filter]: meta.pagination?.total ?? 0,
+          }));
+          setHasMore(page < (meta.pagination?.pageCount ?? 1));
+        }
+      } catch {
+        // noop
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    doFetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchParams]);
+
+  const loadNextPage = useCallback(() => {
+    setFetchParams((prev) => ({ ...prev, page: prev.page + 1 }));
+  }, []);
+
+  // Infinite scroll sentinel
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          hasMoreRef.current &&
+          !loadingRef.current
+        ) {
+          loadNextPage();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadNextPage]);
+
+  const handleFilterChange = useCallback(
+    (slug: string) => {
+      if (slug === fetchParams.filter) return;
+      setArticles([]);
+      setHasMore(true);
+      setFetchParams({ filter: slug, page: 1 });
+    },
+    [fetchParams.filter],
+  );
+
+  // Articles with "creative" category open in lightbox gallery
+  const galleryArticles = useMemo(
+    () =>
+      articles.filter(
+        (a) => a.thumbnail && a.categories.some((c) => c.slug === "creative"),
+      ),
+    [articles],
+  );
+
+  const galleryImages = useMemo(
+    () =>
+      galleryArticles.map((a) => ({
+        src: getImage(a.thumbnail.url),
+        width: a.thumbnail.width,
+        height: a.thumbnail.height,
+        alt: a.title,
+      })),
+    [galleryArticles],
+  );
+
   const { openGallery } = useGallery(galleryImages);
+
+  const allFilters = useMemo(
+    () => [
+      { slug: "all", label: "All work" },
+      ...categories.map((c) => ({ slug: c.slug, label: c.category_name })),
+    ],
+    [categories],
+  );
 
   return (
     <section {...stylex.props(styles.section)}>
       {/* Header */}
       <div {...stylex.props(styles.header)}>
         <h2 {...stylex.props(styles.title)}>Selected work(s)</h2>
-        <ul {...stylex.props(styles.filter)}>
-          {filters.map((filter) => {
-            const isActive = activeFilter === filter.key;
+        <ul {...stylex.props(styles.filterList)}>
+          {allFilters.map((filter) => {
+            const isActive = fetchParams.filter === filter.slug;
+            const count = filterCounts[filter.slug];
             return (
-              <li key={filter.key} {...stylex.props(styles.filterItem)}>
+              <li key={filter.slug} {...stylex.props(styles.filterItem)}>
                 <button
                   {...stylex.props(styles.filterItemButton(isActive))}
-                  onClick={() => setActiveFilter(filter.key)}
+                  onClick={() => handleFilterChange(filter.slug)}
                 >
                   <span
                     {...stylex.props(styles.filterItemButtonLabel(isActive))}
                   >
                     {filter.label}
                   </span>
+                  {/* {count !== undefined && (
+                  )} */}
                   <div
                     {...stylex.props(styles.filterItemButtonCount(isActive))}
                   >
-                    {filter.count}
+                    {count}
                   </div>
                 </button>
               </li>
@@ -163,38 +208,54 @@ const Page = () => {
           })}
         </ul>
       </div>
-      {/* List */}
+
+      {/* Article grid */}
       <ul {...stylex.props(styles.list)}>
-        {mockWork.map((work) => {
-          const isLink = work.type === "product";
-          const filterType = filterTypeMap[activeFilter];
-          const isDisabled =
-            work.disabled || (filterType !== null && work.type !== filterType);
-          const galleryIndex = isLink
-            ? -1
-            : creativeWork.findIndex((w) => w.id === work.id);
+        {articles.map((article) => {
+          const isCreative = article.categories.some(
+            (c) => c.slug === "creative",
+          );
+          const galleryIndex = isCreative
+            ? galleryArticles.findIndex((a) => a.id === article.id)
+            : -1;
+          const href = article.is_link
+            ? (article.link ?? "#")
+            : `/work/${article.slug}`;
+          const thumbnailSrc = article.thumbnail
+            ? getImage(article.thumbnail.url)
+            : undefined;
 
           return (
-            <li key={work.id} {...stylex.props(styles.listItem)}>
+            <li key={article.id} {...stylex.props(styles.listItem)}>
               <Article
-                disabled={isDisabled}
-                isLink={isLink}
-                href={work.href}
-                thumbnailSrc={work.thumbnailSrc}
-                thumbnailAlt={work.thumbnailAlt}
-                title={work.title}
-                description={work.description}
-                onOpen={!isLink ? () => openGallery(galleryIndex) : undefined}
+                isLink={!isCreative}
+                href={isCreative ? undefined : href}
+                thumbnailSrc={thumbnailSrc}
+                thumbnailAlt={article.title}
+                title={article.title}
+                description={article.short_description ?? ""}
+                onOpen={isCreative ? () => openGallery(galleryIndex) : undefined}
               />
             </li>
           );
         })}
       </ul>
+
+      {/* Infinite scroll sentinel + loader */}
+      <div ref={sentinelRef} {...stylex.props(styles.sentinel)}>
+        {loading && (
+          <div {...stylex.props(styles.loaderDots)}>
+            <span {...stylex.props(styles.dot, styles.dot0)} />
+            <span {...stylex.props(styles.dot, styles.dot1)} />
+            <span {...stylex.props(styles.dot, styles.dot2)} />
+          </div>
+        )}
+      </div>
     </section>
   );
 };
 
-export default Page;
+export default WorkPage;
 
 const styles = stylex.create({
   section: {
@@ -211,7 +272,7 @@ const styles = stylex.create({
     textWrap: "nowrap",
     flexShrink: 0,
   },
-  filter: {
+  filterList: {
     display: "flex",
     alignItems: "center",
     gap: spacing.md,
@@ -255,14 +316,19 @@ const styles = stylex.create({
     fontWeight: fontWeight.medium,
     textWrap: "nowrap",
     color: active ? colors.white : colors.textPrimary,
+    textTransform: "capitalize",
   }),
   filterItemButtonCount: (active: boolean) => ({
     fontSize: fontSize.xs,
     height: "24px",
-    width: "24px",
+    minWidth: "24px",
+    paddingLeft: "4px",
+    paddingRight: "4px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
+    aspectRatio: "1/1",
     borderRadius: radius.full,
     color: colors.textPrimary,
     backgroundColor: {
@@ -295,9 +361,38 @@ const styles = stylex.create({
     rowGap: spacing.xl,
     columnGap: spacing["2xl"],
     marginTop: "32px",
+    listStyle: "none",
+    paddingLeft: 0,
   },
   listItem: {
     width: "100%",
     height: "100%",
   },
+  sentinel: {
+    height: "1px",
+    marginTop: spacing["2xl"],
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loaderDots: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl,
+  },
+  dot: {
+    width: "6px",
+    height: "6px",
+    borderRadius: radius.full,
+    backgroundColor: colors.textMuted,
+    animationName: pulse,
+    animationDuration: "1.2s",
+    animationTimingFunction: "ease-in-out",
+    animationIterationCount: "infinite",
+  },
+  dot0: { animationDelay: "0s" },
+  dot1: { animationDelay: "0.2s" },
+  dot2: { animationDelay: "0.4s" },
 });

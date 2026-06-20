@@ -4,7 +4,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { qs } from "../utils/qs";
 
 export const articlesService = {
-  getArticles: async (params?: object): Promise<HeadlessCMSResponse<Article[]>> => {
+  getArticles: async (params?: Record<string, unknown>): Promise<HeadlessCMSResponse<Article[]>> => {
     const queryParams = qs.stringify({
       populate: {
         thumbnail: true,
