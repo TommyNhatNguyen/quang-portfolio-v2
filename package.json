@@ -11,9 +11,11 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@stylexjs/stylex": "^0.18.3",
+    "axios": "^1.18.0",
     "gsap": "^3.15.0",
     "next": "16.2.7",
     "photoswipe": "^5.4.4",
+    "qs": "^6.15.2",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -21,6 +23,7 @@
     "@stylexjs/babel-plugin": "^0.18.3",
     "@stylexjs/postcss-plugin": "^0.18.3",
     "@types/node": "^20",
+    "@types/qs": "^6.15.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.5.0",

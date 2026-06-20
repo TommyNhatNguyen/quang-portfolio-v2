@@ -1,8 +1,8 @@
 "use client";
 
 import { colors } from "@/lib/colors.stylex";
-import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useRef, useState } from "react";
 

@@ -32,11 +32,7 @@ const Article = ({
     >
       {/* Thumbnail */}
       {isLink ? (
-        <Link
-          target="_blank"
-          href={href}
-          {...stylex.props(styles.thumbnailWrapper)}
-        >
+        <Link href={href} {...stylex.props(styles.thumbnailWrapper)}>
           <Image
             {...stylex.props(styles.thumbnailImage)}
             src={thumbnailSrc}
