@@ -1,4 +1,7 @@
+"use client";
 import "@/app/styles/work-detail.css";
+import RichTextRenderer from "@/app/components/blocks-renderer";
+import { Article } from "@/app/interface/article.interface";
 import { articlesService } from "@/app/services/articles-service";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
@@ -9,22 +12,26 @@ import {
   lineHeight,
 } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
-import { BlocksRenderer } from "@strapi/blocks-react-renderer";
 import * as stylex from "@stylexjs/stylex";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { use, useEffect, useState } from "react";
 
-export default async function Page({
+export default function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const { data } = await articlesService.getArticleBySlug(slug);
-  const article = data[0];
+  const { slug } = use(params);
+  const [article, setArticle] = useState<Article | null>(null);
 
-  if (!article) notFound();
+  useEffect(() => {
+    articlesService.getArticleBySlug(slug).then(({ data }) => {
+      setArticle(data[0] ?? null);
+    });
+  }, [slug]);
+
+  if (!article) return null;
 
   return (
     <article className="work-detail">
@@ -54,7 +61,7 @@ export default async function Page({
               <p>{article.short_description}</p>
             </aside>
           )}
-          <BlocksRenderer content={article.content} />
+          <RichTextRenderer content={article.content} />
         </div>
       </div>
     </article>

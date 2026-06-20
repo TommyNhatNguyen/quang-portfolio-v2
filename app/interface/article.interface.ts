@@ -1,3 +1,4 @@
+import { StrapiBlocksContent } from "./strapi-blocks.interface";
 import { Category } from "./category.interface";
 import { StrapiMedia } from "./media.interface";
 
@@ -11,6 +12,6 @@ export interface Article {
   link: string | null;
   thumbnail: StrapiMedia;
   categories: Category[];
-  content: object[];
+  content: StrapiBlocksContent;
   publishedAt: string;
 }

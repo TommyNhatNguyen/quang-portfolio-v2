@@ -50,8 +50,8 @@ const Article = ({
             {...stylex.props(styles.thumbnailImage)}
             src={thumbnailSrc}
             alt={thumbnailAlt}
-            width={670}
-            height={480}
+            width={1340}
+            height={960}
           />
         </div>
       )}
