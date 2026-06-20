@@ -1,4 +1,5 @@
 import "@/app/styles/work-detail.css";
+import { articlesService } from "@/app/services/articles-service";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
 import {
@@ -8,11 +9,23 @@ import {
   lineHeight,
 } from "@/lib/typography.stylex";
 import { breakpoints } from "@/lib/variables.stylex";
+import { BlocksRenderer } from "@strapi/blocks-react-renderer";
 import * as stylex from "@stylexjs/stylex";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-const Page = () => {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const { data } = await articlesService.getArticleBySlug(slug);
+  const article = data[0];
+
+  if (!article) notFound();
+
   return (
     <article className="work-detail">
       <div className="work-detail__container">
@@ -30,94 +43,23 @@ const Page = () => {
           </Link>
 
           <div {...stylex.props(styles.heroContent)}>
-            <h1 {...stylex.props(styles.heroH1)}>
-              Crafting Digital Experiences
-              <br />
-              That Matter
-            </h1>
-            <p {...stylex.props(styles.heroLead)}>
-              In an age of infinite scroll and fleeting attention, creating
-              meaningful digital experiences has become both an art and a
-              science.
-            </p>
+            <h1 {...stylex.props(styles.heroH1)}>{article.title}</h1>
           </div>
         </header>
 
         <div className="work-detail__content">
-          <aside>
-            <h2>Summary of the article</h2>
-            <p>
-              Successful digital experience design requires a blend of deep user
-              research, simplification thinking, and a commitment to putting
-              people at the center of every decision. When done right, digital
-              products not only solve problems but also create emotional
-              connections with users.
-            </p>
-          </aside>
-
-          <p>
-            Digital experience design is not just about creating a visually
-            appealing interface. It is a journey of understanding users,
-            anticipating their needs, and turning each interaction into a
-            meaningful moment.
-          </p>
-
-          <h2>Understand users before designing</h2>
-          <p>
-            With a professional design process, I start each project by
-            listening. Listening not only to what clients say but also to what
-            they don&apos;t say - the hidden pain points, the unspoken
-            expectations, and the subconscious behaviors when they interact with
-            digital products.
-          </p>
-
-          <figure>
-            <img
-              src="/meta-image.jpg"
-              alt="Illustration of the user research process"
-            />
-            <figcaption>Illustration of the user research process</figcaption>
-          </figure>
-
-          <blockquote>
-            <p>
-              &ldquo;The best design is the one you don&apos;t realize exists.
-              It feels as natural as breathing, guiding you to the right place
-              without you having to think about it.&rdquo;
-            </p>
-            <footer>— Minh Tran, UX Director</footer>
-          </blockquote>
-
-          <p>
-            In today&apos;s digital world, users are no longer patient with
-            disjointed experiences or complex interfaces. They expect
-            seamlessness - from the moment they open the app to when they
-            achieve their goals. Every second of waiting, every unnecessary
-            click is an opportunity for them to leave.
-          </p>
-
-          <h2>Human-centered design principles</h2>
-          <p>
-            We believe that technology should serve people, not the other way
-            around. This means sometimes rejecting &ldquo;cool&rdquo; features
-            to keep the product simple and user-friendly. Less is more, but
-            better.
-          </p>
-
-          <figure>
-            <img
-              src="/meta-image.jpg"
-              alt="Illustration of the user research process"
-            />
-            <figcaption>Illustration of the user research process</figcaption>
-          </figure>
+          {article.short_description && (
+            <aside>
+              <h2>Summary</h2>
+              <p>{article.short_description}</p>
+            </aside>
+          )}
+          <BlocksRenderer content={article.content} />
         </div>
       </div>
     </article>
   );
-};
-
-export default Page;
+}
 
 const styles = stylex.create({
   hero: {
@@ -189,16 +131,5 @@ const styles = stylex.create({
     textAlign: "center",
     width: "100%",
     margin: 0,
-  },
-  heroLead: {
-    fontSize: fontSize.base,
-    fontWeight: fontWeight.regular,
-    lineHeight: lineHeight.base,
-    letterSpacing: letterSpacing.normal,
-    color: colors.textPrimary,
-    textAlign: "center",
-    width: "100%",
-    marginTop: spacing.lg,
-    marginBottom: 0,
   },
 });

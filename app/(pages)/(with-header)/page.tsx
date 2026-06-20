@@ -10,7 +10,6 @@ import Link from "next/link";
 
 const AboutPage = async () => {
   const { data } = await aboutPageService.getAboutPage();
-  console.log("🚀 ~ AboutPage ~ data:", data);
 
   return (
     <div {...stylex.props(styles.page)}>
