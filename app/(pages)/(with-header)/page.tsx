@@ -1,3 +1,5 @@
+import { aboutPageService } from "@/app/services/about-page-service";
+import { getImage } from "@/app/utils/getImage";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
 import { fontSize, fontWeight } from "@/lib/typography.stylex";
@@ -6,22 +8,10 @@ import * as stylex from "@stylexjs/stylex";
 import Image from "next/image";
 import Link from "next/link";
 
-const SOCIAL_LINKS = [
-  { label: "Behance", href: "#" },
-  { label: "Dribbble", href: "#" },
-  { label: "LinkedIn", href: "#" },
-];
+const AboutPage = async () => {
+  const { data } = await aboutPageService.getAboutPage();
+  console.log("🚀 ~ AboutPage ~ data:", data);
 
-const STACK_ITEMS = [
-  "figma",
-  "framer",
-  "jitter",
-  "cursor",
-  "claude",
-  "after-effects",
-];
-
-const AboutPage = () => {
   return (
     <div {...stylex.props(styles.page)}>
       <div {...stylex.props(styles.container)}>
@@ -29,60 +19,57 @@ const AboutPage = () => {
         <div {...stylex.props(styles.profile)}>
           <div {...stylex.props(styles.avatar)}>
             <Image
-              src={"/avatar.jpg"}
+              src={getImage(data.avatar.url)}
               alt="avatar"
               width={100}
               height={100}
-              preload={true}
+              priority
               {...stylex.props(styles.avatarImage)}
             />
           </div>
           <div {...stylex.props(styles.profileInfo)}>
             <div {...stylex.props(styles.nameRow)}>
-              <span {...stylex.props(styles.name)}>quang.laam (steve)</span>
+              <span {...stylex.props(styles.name)}>{data.username}</span>
               <div {...stylex.props(styles.badge)}>
                 <Image
                   src={"/icons/verify-icon.svg"}
                   alt="badge"
                   width={20}
                   height={20}
-                  preload={true}
+                  priority
                   {...stylex.props(styles.badgeImage)}
                 />
               </div>
             </div>
-            <p {...stylex.props(styles.title)}>Senior UX/UI designer</p>
+            <p {...stylex.props(styles.title)}>{data.job_title}</p>
           </div>
         </div>
 
         {/* Bio */}
-        <p {...stylex.props(styles.bio)}>
-          As a designer working at the intersection of Product thinking and UI
-          Visual craft, I believe great design is where visual polish meets
-          seamless user experience. I enjoy obsessing over the finer details —
-          from typography and whitespace to color harmony — to transform complex
-          workflows into interfaces that feel intuitive, delightful, and
-          impactful.
-        </p>
+        <p {...stylex.props(styles.bio)}>{data.short_description}</p>
 
         {/* Links */}
         <div {...stylex.props(styles.linksRow)}>
           <div {...stylex.props(styles.socialLinks)}>
-            {SOCIAL_LINKS.map(({ label, href }) => (
+            {data.social_buttons.map(({ id, label, link, icon }) => (
               <Link
-                key={label}
-                href={href}
+                key={id}
+                href={link}
                 target="_blank"
                 {...stylex.props(styles.socialLink)}
               >
                 <span {...stylex.props(styles.socialLinkLabel)}>{label}</span>
                 <div {...stylex.props(styles.socialLinkIcon)}>
                   <Image
-                    src={`/icons/arrow-up-right-icon.svg`}
+                    src={
+                      icon
+                        ? getImage(icon.url)
+                        : `/icons/arrow-up-right-icon.svg`
+                    }
                     alt={label}
                     width={16}
                     height={16}
-                    preload={true}
+                    priority
                     {...stylex.props(styles.socialLinkIconImage)}
                   />
                 </div>
@@ -90,37 +77,36 @@ const AboutPage = () => {
             ))}
           </div>
           <div {...stylex.props(styles.actionLinks)}>
-            <Link href="#" {...stylex.props(styles.actionPrimary)}>
-              <div {...stylex.props(styles.icon)}>
-                <Image
-                  src={"/icons/download-icon.svg"}
-                  alt="download"
-                  width={16}
-                  height={16}
-                  preload={true}
-                />
-              </div>
-              <span {...stylex.props(styles.actionPrimaryLabel)}>
-                Download CV
-              </span>
-            </Link>
-            <Link
-              href="mailto:hello@quang.laam.com"
-              {...stylex.props(styles.actionSecondary)}
-            >
-              <div {...stylex.props(styles.icon)}>
-                <Image
-                  src={"/icons/email-icon.svg"}
-                  alt="copy"
-                  width={16}
-                  height={16}
-                  preload={true}
-                />
-              </div>
-              <span {...stylex.props(styles.actionSecondaryLabel)}>
-                Copy email
-              </span>
-            </Link>
+            {data.action_buttons.map(({ id, label, link, icon }, index) => (
+              <Link
+                key={id}
+                href={link}
+                {...stylex.props(
+                  index === 0 ? styles.actionPrimary : styles.actionSecondary,
+                )}
+              >
+                {icon && (
+                  <div {...stylex.props(styles.icon)}>
+                    <Image
+                      src={getImage(icon.url)}
+                      alt={label}
+                      width={16}
+                      height={16}
+                      priority
+                    />
+                  </div>
+                )}
+                <span
+                  {...stylex.props(
+                    index === 0
+                      ? styles.actionPrimaryLabel
+                      : styles.actionSecondaryLabel,
+                  )}
+                >
+                  {label}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -131,14 +117,14 @@ const AboutPage = () => {
         <section {...stylex.props(styles.stack)}>
           <span {...stylex.props(styles.stackLabel)}>STACK</span>
           <div {...stylex.props(styles.stackIcons)}>
-            {STACK_ITEMS.map((name) => (
-              <div key={name} {...stylex.props(styles.stackIcon)}>
+            {data.stack_images.map((image) => (
+              <div key={image.id} {...stylex.props(styles.stackIcon)}>
                 <Image
-                  src={`/${name}-logo.svg`}
-                  alt={name}
+                  src={getImage(image.url)}
+                  alt={image.name}
                   width={40}
                   height={40}
-                  preload={true}
+                  priority
                   {...stylex.props(styles.stackIconImage)}
                 />
               </div>
