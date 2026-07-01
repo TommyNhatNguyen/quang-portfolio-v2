@@ -1,4 +1,6 @@
+"use client";
 import { aboutPageService } from "@/app/services/about-page-service";
+import { AboutPage as AboutPageData } from "@/app/interface/about-page.interface";
 import { getImage } from "@/app/utils/getImage";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
@@ -7,9 +9,24 @@ import { breakpoints } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-const AboutPage = async () => {
-  const { data } = await aboutPageService.getAboutPage();
+const AboutPage = () => {
+  const [data, setData] = useState<AboutPageData | null>(null);
+
+  useEffect(() => {
+    aboutPageService.getAboutPage().then(({ data }) => {
+      setData(data);
+    });
+  }, []);
+
+  const copyClipBoard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
+
+  if (!data) return null;
 
   return (
     <div {...stylex.props(styles.page)}>
@@ -76,36 +93,52 @@ const AboutPage = async () => {
             ))}
           </div>
           <div {...stylex.props(styles.actionLinks)}>
-            {data.action_buttons.map(({ id, label, link, icon }, index) => (
-              <Link
-                key={id}
-                href={link}
-                {...stylex.props(
-                  index === 0 ? styles.actionPrimary : styles.actionSecondary,
-                )}
-              >
-                {icon && (
-                  <div {...stylex.props(styles.icon)}>
-                    <Image
-                      src={getImage(icon.url)}
-                      alt={label}
-                      width={16}
-                      height={16}
-                      priority
-                    />
-                  </div>
-                )}
-                <span
+            {data.action_buttons.map(({ id, label, link, icon }, index) => {
+              const isCopyLink = index == 1;
+              if (isCopyLink) {
+                return (
+                  <button
+                    key={id}
+                    onClick={() => copyClipBoard(link)}
+                    {...stylex.props(styles.actionSecondary)}
+                  >
+                    <span {...stylex.props(styles.actionSecondaryLabel)}>
+                      {label}
+                    </span>
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={id}
+                  href={link}
                   {...stylex.props(
-                    index === 0
-                      ? styles.actionPrimaryLabel
-                      : styles.actionSecondaryLabel,
+                    index === 0 ? styles.actionPrimary : styles.actionSecondary,
                   )}
                 >
-                  {label}
-                </span>
-              </Link>
-            ))}
+                  {icon && (
+                    <div {...stylex.props(styles.icon)}>
+                      <Image
+                        src={getImage(icon.url)}
+                        alt={label}
+                        width={16}
+                        height={16}
+                        priority
+                      />
+                    </div>
+                  )}
+                  <span
+                    {...stylex.props(
+                      index === 0
+                        ? styles.actionPrimaryLabel
+                        : styles.actionSecondaryLabel,
+                    )}
+                  >
+                    {label}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
@@ -139,13 +172,21 @@ export default AboutPage;
 
 const styles = stylex.create({
   page: {
-    height: "100vh",
+    // Header renders in normal flow above this element (48px nav pill +
+    // vertical padding), so subtract its real height or the page's own
+    // 100vh pushes total document height past one viewport and scrolls.
+    height: {
+      default: "calc(100vh - 112px)",
+      [breakpoints.mobile]: "calc(100vh - 96px)",
+    },
     width: "100%",
     paddingTop: "84px",
+    overflowY: "hidden",
   },
   container: {
     maxWidth: "600px",
     margin: "auto",
+    overflowY: "hidden",
   },
   profile: {
     display: "flex",

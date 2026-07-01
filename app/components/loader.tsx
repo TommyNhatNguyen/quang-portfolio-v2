@@ -50,11 +50,11 @@ export const Loader = () => {
 const styles = stylex.create({
   loader: {
     width: "100%",
-    height: "100%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     position: "fixed",
+    overflow: "hidden",
     top: 0,
     left: 0,
     right: 0,
