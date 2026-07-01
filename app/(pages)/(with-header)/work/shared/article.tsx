@@ -1,4 +1,3 @@
-"use client";
 import { colors } from "@/lib/colors.stylex";
 import { fontSize, fontWeight } from "@/lib/typography.stylex";
 import * as stylex from "@stylexjs/stylex";
@@ -118,19 +117,14 @@ const styles = stylex.create({
   articleTitleContainer: {},
   articleTitle: {
     fontWeight: fontWeight.medium,
-    textOverflow: "ellipsis",
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient : "vertical",
-    overflow: "hidden",
   },
   articleDescription: {
     fontSize: fontSize.md,
     color: colors.textTertiary,
-    textOverflow: "ellipsis",
     display: "-webkit-box",
     WebkitLineClamp: 3,
-    WebkitBoxOrient : "vertical",
+    WebkitBoxOrient: "vertical",
     overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 });

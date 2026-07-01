@@ -1,6 +1,6 @@
 "use client";
-import { aboutPageService } from "@/app/services/about-page-service";
 import { AboutPage as AboutPageData } from "@/app/interface/about-page.interface";
+import { aboutPageService } from "@/app/services/about-page-service";
 import { getImage } from "@/app/utils/getImage";
 import { colors } from "@/lib/colors.stylex";
 import { radius, spacing } from "@/lib/spacing.stylex";
