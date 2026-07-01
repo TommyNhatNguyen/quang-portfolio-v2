@@ -6,6 +6,7 @@ import { variables } from "@/lib/variables.stylex";
 import * as stylex from "@stylexjs/stylex";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LetterSwapForward } from "./animate-text";
 import {
   useEffect,
   useLayoutEffect,
@@ -56,7 +57,7 @@ const Header = () => {
             )}
             onClick={() => startTransition(() => setActiveTab(key))}
           >
-            <span>{label}</span>
+            <LetterSwapForward label={label} staggerFrom="center" />
           </Link>
         ))}
         <div

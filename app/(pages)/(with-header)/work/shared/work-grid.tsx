@@ -1,4 +1,5 @@
 "use client";
+import { LetterSwapForward } from "@/app/components/animate-text";
 import { Article as ArticleType } from "@/app/interface/article.interface";
 import { Category } from "@/app/interface/category.interface";
 import { articlesService } from "@/app/services/articles-service";
@@ -13,6 +14,12 @@ import Article from "./article";
 import { useGallery } from "./gallery";
 
 const PAGE_SIZE = 12;
+
+// LetterSwapForward splits labels into one flex box per character, which
+// breaks CSS text-transform's word-boundary detection (every letter reads
+// as its own word). Case the string here instead of via text-transform.
+const toTitleCase = (value: string) =>
+  value.replace(/\w\S*/g, (word) => word[0].toUpperCase() + word.slice(1));
 
 const pulse = stylex.keyframes({
   "0%, 100%": { opacity: 0.2, transform: "scale(0.8)" },
@@ -159,7 +166,7 @@ const WorkGrid = ({
       { slug: "all", label: "All work" },
       ...initialCategories.map((c) => ({
         slug: c.slug,
-        label: c.category_name,
+        label: toTitleCase(c.category_name),
       })),
     ],
     [initialCategories],
@@ -180,11 +187,11 @@ const WorkGrid = ({
                   {...stylex.props(styles.filterItemButton(isActive))}
                   onClick={() => handleFilterChange(filter.slug)}
                 >
-                  <span
+                  <LetterSwapForward
                     {...stylex.props(styles.filterItemButtonLabel(isActive))}
-                  >
-                    {filter.label}
-                  </span>
+                    label={filter.label.toUpperCase()}
+                    staggerFrom="center"
+                  />
                   {/* {count !== undefined && (
                   )} */}
                   <div
@@ -308,7 +315,6 @@ const styles = stylex.create({
     fontWeight: fontWeight.medium,
     textWrap: "nowrap",
     color: active ? colors.white : colors.textPrimary,
-    textTransform: "capitalize",
   }),
   filterItemButtonCount: (active: boolean) => ({
     fontSize: fontSize.xs,

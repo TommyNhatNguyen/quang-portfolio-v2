@@ -1,6 +1,7 @@
 "use client";
 import "@/app/styles/work-detail.css";
 import RichTextRenderer from "@/app/components/blocks-renderer";
+import { LetterSwapForward } from "@/app/components/animate-text";
 import { Article } from "@/app/interface/article.interface";
 import { articlesService } from "@/app/services/articles-service";
 import { colors } from "@/lib/colors.stylex";
@@ -46,7 +47,9 @@ export default function Page({
                 height={32}
               />
             </button>
-            <span {...stylex.props(styles.backButtonLabel)}>Back to Work</span>
+            <span {...stylex.props(styles.backButtonLabel)}>
+              <LetterSwapForward label="Back to Work" staggerFrom="center" />
+            </span>
           </Link>
 
           <div {...stylex.props(styles.heroContent)}>

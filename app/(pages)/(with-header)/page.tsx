@@ -1,4 +1,5 @@
 "use client";
+import { LetterSwapForward } from "@/app/components/animate-text";
 import { AboutPage as AboutPageData } from "@/app/interface/about-page.interface";
 import { aboutPageService } from "@/app/services/about-page-service";
 import { getImage } from "@/app/utils/getImage";
@@ -74,7 +75,7 @@ const AboutPage = () => {
                 target="_blank"
                 {...stylex.props(styles.socialLink)}
               >
-                <span {...stylex.props(styles.socialLinkLabel)}>{label}</span>
+                <LetterSwapForward label={label} staggerFrom="center" />
                 <div {...stylex.props(styles.socialLinkIcon)}>
                   <Image
                     src={
@@ -103,7 +104,7 @@ const AboutPage = () => {
                     {...stylex.props(styles.actionSecondary)}
                   >
                     <span {...stylex.props(styles.actionSecondaryLabel)}>
-                      {label}
+                      <LetterSwapForward label={label} staggerFrom="center" />
                     </span>
                   </button>
                 );
@@ -134,7 +135,7 @@ const AboutPage = () => {
                         : styles.actionSecondaryLabel,
                     )}
                   >
-                    {label}
+                    <LetterSwapForward label={label} staggerFrom="center" />
                   </span>
                 </Link>
               );
@@ -323,6 +324,7 @@ const styles = stylex.create({
     textWrap: "nowrap",
   },
   actionSecondary: {
+    cursor: "pointer",
     display: "flex",
     alignItems: "center",
     flexShrink: 0,
